@@ -94,7 +94,7 @@ func (cmd *Command) Int64(name string) int64 {
 
 func getInt[T int | int8 | int16 | int32 | int64](cmd *Command, name string) T {
 	if v, ok := cmd.Value(name).(T); ok {
-		tracef("int available for flag name %[1]q with value=%[2]v (cmd=%[3]q)", name, v, cmd.Name)
+		tracef("int available for flag name %[1]q with value=%[2]v (cmd=%[3]q)", name, cmd.traceAny(v), cmd.Name)
 
 		return v
 	}

@@ -53,7 +53,7 @@ func (cmd *Command) Uint64Slice(name string) []uint64 {
 
 func getUintSlice[T uint | uint8 | uint16 | uint32 | uint64](cmd *Command, name string) []T {
 	if v, ok := cmd.Value(name).([]T); ok {
-		tracef("uint slice available for flag name %[1]q with value=%[2]v (cmd=%[3]q)", name, v, cmd.Name)
+		tracef("uint slice available for flag name %[1]q with value=%[2]v (cmd=%[3]q)", name, cmd.traceAny(v), cmd.Name)
 
 		return v
 	}

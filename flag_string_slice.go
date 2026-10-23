@@ -11,7 +11,7 @@ var NewStringSlice = NewSliceBase[string, StringConfig, stringValue]
 // nil if not found
 func (cmd *Command) StringSlice(name string) []string {
 	if v, ok := cmd.Value(name).([]string); ok {
-		tracef("string slice available for flag name %[1]q with value=%[2]v (cmd=%[3]q)", name, v, cmd.Name)
+		tracef("string slice available for flag name %[1]q with value=%[2]v (cmd=%[3]q)", name, cmd.traceAny(v), cmd.Name)
 		return v
 	}
 

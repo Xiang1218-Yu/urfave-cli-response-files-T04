@@ -176,7 +176,9 @@ func (f *FlagBase[T, C, V]) PostParse() error {
 
 // pass configuration of parsing to value
 func (f *FlagBase[T, C, V]) setMultiValueParsingConfig(c multiValueParsingConfig) {
-	tracef("setMultiValueParsingConfig %T, %+v", f.value, f.value)
+	// Only log the value type: rendering the value itself could leak
+	// values supplied through response files into trace diagnostics.
+	tracef("setMultiValueParsingConfig %T", f.value)
 	f.multiValueConfig = &c
 	if cf, ok := f.value.(multiValueParsingConfigSetter); ok {
 		cf.setMultiValueParsingConfig(c)

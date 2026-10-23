@@ -77,7 +77,7 @@ func (t *textValue) String() string {
 // Text looks up the value of a local TextFlag, returns nil if not found
 func (cmd *Command) Text(name string) TextMarshalUnmarshaler {
 	if v, ok := cmd.Value(name).(TextMarshalUnmarshaler); ok {
-		tracef("text available for flag name %[1]q with value=%[2]v (cmd=%[3]q)", name, v, cmd.Name)
+		tracef("text available for flag name %[1]q with value=%[2]v (cmd=%[3]q)", name, cmd.traceAny(v), cmd.Name)
 		return v
 	}
 

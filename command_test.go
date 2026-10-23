@@ -6585,6 +6585,14 @@ func TestJSONExportCommand(t *testing.T) {
 				"mutuallyExclusiveFlags": null,
 				"arguments": null,
 				"readArgsFromStdin": false,
+				"responseFile": {
+				  "enabled": false,
+				  "prefix": "",
+				  "maxDepth": 0,
+				  "maxFileSize": 0,
+				  "maxTotalSize": 0,
+				  "maxExpandedArgs": 0
+				},
 				"stopOnNthArg": null
 			  }
 			],
@@ -6652,6 +6660,14 @@ func TestJSONExportCommand(t *testing.T) {
 			"mutuallyExclusiveFlags": null,
 			"arguments": null,
 			"readArgsFromStdin": false,
+				"responseFile": {
+				  "enabled": false,
+				  "prefix": "",
+				  "maxDepth": 0,
+				  "maxFileSize": 0,
+				  "maxTotalSize": 0,
+				  "maxExpandedArgs": 0
+				},
 			"stopOnNthArg": null
 		  },
 		  {
@@ -6688,6 +6704,14 @@ func TestJSONExportCommand(t *testing.T) {
 			"mutuallyExclusiveFlags": null,
 			"arguments": null,
 			"readArgsFromStdin": false,
+				"responseFile": {
+				  "enabled": false,
+				  "prefix": "",
+				  "maxDepth": 0,
+				  "maxFileSize": 0,
+				  "maxTotalSize": 0,
+				  "maxExpandedArgs": 0
+				},
 			"stopOnNthArg": null
 		  },
 		  {
@@ -6721,6 +6745,14 @@ func TestJSONExportCommand(t *testing.T) {
 			"mutuallyExclusiveFlags": null,
 			"arguments": null,
 			"readArgsFromStdin": false,
+				"responseFile": {
+				  "enabled": false,
+				  "prefix": "",
+				  "maxDepth": 0,
+				  "maxFileSize": 0,
+				  "maxTotalSize": 0,
+				  "maxExpandedArgs": 0
+				},
 			"stopOnNthArg": null
 		  },
 		  {
@@ -6774,6 +6806,14 @@ func TestJSONExportCommand(t *testing.T) {
 			"mutuallyExclusiveFlags": null,
 			"arguments": null,
 			"readArgsFromStdin": false,
+				"responseFile": {
+				  "enabled": false,
+				  "prefix": "",
+				  "maxDepth": 0,
+				  "maxFileSize": 0,
+				  "maxTotalSize": 0,
+				  "maxExpandedArgs": 0
+				},
 			"stopOnNthArg": null
 		  },
 		  {
@@ -6844,6 +6884,14 @@ func TestJSONExportCommand(t *testing.T) {
 				"mutuallyExclusiveFlags": null,
 				"arguments": null,
 				"readArgsFromStdin": false,
+				"responseFile": {
+				  "enabled": false,
+				  "prefix": "",
+				  "maxDepth": 0,
+				  "maxFileSize": 0,
+				  "maxTotalSize": 0,
+				  "maxExpandedArgs": 0
+				},
 				"stopOnNthArg": null
 			  }
 			],
@@ -6911,6 +6959,14 @@ func TestJSONExportCommand(t *testing.T) {
 			"mutuallyExclusiveFlags": null,
 			"arguments": null,
 			"readArgsFromStdin": false,
+				"responseFile": {
+				  "enabled": false,
+				  "prefix": "",
+				  "maxDepth": 0,
+				  "maxFileSize": 0,
+				  "maxTotalSize": 0,
+				  "maxExpandedArgs": 0
+				},
 			"stopOnNthArg": null
 		  }
 		],
@@ -7035,6 +7091,14 @@ func TestJSONExportCommand(t *testing.T) {
 		  }
 		],
 		"readArgsFromStdin": false,
+				"responseFile": {
+				  "enabled": false,
+				  "prefix": "",
+				  "maxDepth": 0,
+				  "maxFileSize": 0,
+				  "maxTotalSize": 0,
+				  "maxExpandedArgs": 0
+				},
 		"stopOnNthArg": null
 	  }
 `

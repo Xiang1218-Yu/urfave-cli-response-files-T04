@@ -24,7 +24,7 @@ func flagFromError(err error) (string, error) {
 }
 
 func (cmd *Command) parseFlags(args Args) (Args, error) {
-	tracef("parsing flags from arguments %[1]q (cmd=%[2]q)", args, cmd.Name)
+	tracef("parsing flags from arguments %[1]q (cmd=%[2]q)", cmd.traceArgSlice(args.Slice()), cmd.Name)
 
 	cmd.setFlags = map[Flag]struct{}{}
 	cmd.appliedFlags = cmd.allFlags()
@@ -72,12 +72,12 @@ func (cmd *Command) parseFlags(args Args) (Args, error) {
 		}
 	}
 
-	tracef("parsing flags iteratively tail=%[1]q (cmd=%[2]q)", args.Tail(), cmd.Name)
+	tracef("parsing flags iteratively tail=%[1]q (cmd=%[2]q)", cmd.traceArgSlice(args.Tail()), cmd.Name)
 	defer tracef("done parsing flags (cmd=%[1]q)", cmd.Name)
 
 	posArgs := []string{}
 	for rargs := args.Slice(); len(rargs) > 0; rargs = rargs[1:] {
-		tracef("rearrange:1 (cmd=%[1]q) %[2]q", cmd.Name, rargs)
+		tracef("rearrange:1 (cmd=%[1]q) %[2]q", cmd.Name, cmd.traceArgSlice(rargs))
 
 		// Check if we've reached the Nth argument and should stop flag parsing.
 		// This comes before the empty arg and "--" checks below, so that an
@@ -108,7 +108,7 @@ func (cmd *Command) parseFlags(args Args) (Args, error) {
 		// handle positional args
 		if firstArg[0] != '-' {
 			// positional argument probably
-			tracef("rearrange-3 (cmd=%[1]q) check %[2]q", cmd.Name, firstArg)
+			tracef("rearrange-3 (cmd=%[1]q) check %[2]q", cmd.Name, cmd.traceValue(firstArg))
 
 			// if there is a command by that name let the command handle the
 			// rest of the parsing
@@ -156,7 +156,7 @@ func (cmd *Command) parseFlags(args Args) (Args, error) {
 			valFromEqual = true
 		}
 
-		tracef("flagName:2 (fName=%[1]q) (fVal=%[2]q)", flagName, flagVal)
+		tracef("flagName:2 (fName=%[1]q) (fVal=%[2]q)", flagName, cmd.traceValue(flagVal))
 
 		f := cmd.lookupAppliedFlag(flagName)
 		// found a flag matching given flagName
@@ -166,7 +166,7 @@ func (cmd *Command) parseFlags(args Args) (Args, error) {
 				if flagVal == "" {
 					flagVal = "true"
 				}
-				tracef("parse Apply bool flag (fName=%[1]q) (fVal=%[2]q)", flagName, flagVal)
+				tracef("parse Apply bool flag (fName=%[1]q) (fVal=%[2]q)", flagName, cmd.traceValue(flagVal))
 				if err := cmd.set(flagName, f, flagVal); err != nil {
 					return &stringSliceArgs{posArgs}, err
 				}
@@ -189,7 +189,7 @@ func (cmd *Command) parseFlags(args Args) (Args, error) {
 				rargs = rargs[1:]
 			}
 
-			tracef("setting non bool flag (fName=%[1]q) (fVal=%[2]q)", flagName, flagVal)
+			tracef("setting non bool flag (fName=%[1]q) (fVal=%[2]q)", flagName, cmd.traceValue(flagVal))
 			if err := cmd.set(flagName, f, flagVal); err != nil {
 				return &stringSliceArgs{posArgs}, err
 			}
@@ -258,7 +258,7 @@ func (cmd *Command) parseFlags(args Args) (Args, error) {
 					flagVal = rargs[1]
 					rargs = rargs[1:]
 				}
-				tracef("parseFlags (flagName %[1]q) (flagVal %[2]q)", flagName, flagVal)
+				tracef("parseFlags (flagName %[1]q) (flagVal %[2]q)", flagName, cmd.traceValue(flagVal))
 				if err := cmd.set(string(c), sf, flagVal); err != nil {
 					tracef("processing flag.4 (fName=%[1]q)", string(c))
 					return &stringSliceArgs{posArgs}, err
@@ -272,6 +272,6 @@ func (cmd *Command) parseFlags(args Args) (Args, error) {
 		}
 	}
 
-	tracef("returning-2 (cmd=%[1]q) args %[2]q", cmd.Name, posArgs)
+	tracef("returning-2 (cmd=%[1]q) args %[2]q", cmd.Name, cmd.traceArgSlice(posArgs))
 	return &stringSliceArgs{posArgs}, nil
 }

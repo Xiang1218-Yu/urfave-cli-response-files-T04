@@ -57,7 +57,7 @@ func (f *genericValue) IsBoolFlag() bool {
 func (cmd *Command) Generic(name string) Value {
 	if fl := cmd.lookupFlag(name); fl != nil {
 		if v, ok := fl.Get().(Value); ok {
-			tracef("generic available for flag name %[1]q with value=%[2]v (cmd=%[3]q)", name, v, cmd.Name)
+			tracef("generic available for flag name %[1]q with value=%[2]v (cmd=%[3]q)", name, cmd.traceAny(v), cmd.Name)
 			return v
 		}
 		if fl, ok := fl.(*GenericFlag); ok {

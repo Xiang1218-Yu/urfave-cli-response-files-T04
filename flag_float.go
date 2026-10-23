@@ -66,7 +66,7 @@ func (cmd *Command) Float64(name string) float64 {
 
 func getFloat[T float32 | float64](cmd *Command, name string) T {
 	if v, ok := cmd.Value(name).(T); ok {
-		tracef("float available for flag name %[1]q with value=%[2]v (cmd=%[3]q)", name, v, cmd.Name)
+		tracef("float available for flag name %[1]q with value=%[2]v (cmd=%[3]q)", name, cmd.traceAny(v), cmd.Name)
 
 		return v
 	}

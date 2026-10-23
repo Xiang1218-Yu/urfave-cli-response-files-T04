@@ -82,7 +82,7 @@ func helpCommandAction(ctx context.Context, cmd *Command) error {
 	args := cmd.Args()
 	firstArg := args.First()
 
-	tracef("doing help for cmd %[1]q with args %[2]q", cmd, args)
+	tracef("doing help for cmd %[1]q with args %[2]q", cmd, cmd.traceArgSlice(args.Slice()))
 
 	// helpCommandAction is triggered in several ways:
 	//
@@ -249,7 +249,7 @@ func DefaultCompleteWithFlags(ctx context.Context, cmd *Command) {
 	args := os.Args
 	if cmd != nil && cmd.parent != nil {
 		args = cmd.Args().Slice()
-		tracef("running default complete with flags[%v] on command %[2]q", args, cmd.Name)
+		tracef("running default complete with flags[%v] on command %[2]q", cmd.traceArgSlice(args), cmd.Name)
 	} else {
 		tracef("running default complete with os.Args flags[%v]", args)
 	}

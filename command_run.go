@@ -110,20 +110,53 @@ func (cmd *Command) run(ctx context.Context, osArgs []string) (_ context.Context
 	}
 
 	if cmd.parent == nil {
+		var stdinArgs []string
 		if cmd.ReadArgsFromStdin {
-			if args, err := cmd.parseArgsFromStdin(); err != nil {
+			parsedStdinArgs, err := cmd.parseArgsFromStdin()
+			if err != nil {
 				return ctx, err
-			} else {
-				osArgs = append(osArgs, args...)
 			}
+			stdinArgs = parsedStdinArgs
 		}
+
+		if cmd.ResponseFile.Enabled {
+			seeds := make([]ExpandedArg, 0, len(osArgs)+len(stdinArgs))
+			for i, osArg := range osArgs {
+				seeds = append(seeds, ExpandedArg{
+					Value:  osArg,
+					Source: ArgSource{Column: i + 1},
+				})
+			}
+			for i, stdinArg := range stdinArgs {
+				seeds = append(seeds, ExpandedArg{
+					Value:  stdinArg,
+					Source: ArgSource{File: stdinSourceFile, Column: i + 1},
+				})
+			}
+
+			// Expansion runs before completion handling and flag parsing
+			// so response file arguments use the same pipeline as direct
+			// arguments. Expansion errors abort before anything runs.
+			expanded, err := expandResponseFileSeeds(seeds, cmd.ResponseFile)
+			if err != nil {
+				return ctx, err
+			}
+			cmd.responseFileArgs = expanded
+			osArgs = make([]string, len(expanded))
+			for i, expandedArg := range expanded {
+				osArgs[i] = expandedArg.Value
+			}
+		} else {
+			osArgs = append(osArgs, stdinArgs...)
+		}
+
 		// handle the completion flag separately from the flagset since
 		// completion could be attempted after a flag, but before its value was put
 		// on the command line. this causes the flagset to interpret the completion
 		// flag name as the value of the flag before it which is undesirable
 		// note that we can only do this because the shell autocomplete function
 		// always appends the completion flag at the end of the command
-		tracef("checking osArgs %v (cmd=%[2]q)", osArgs, cmd.Name)
+		tracef("checking osArgs %v (cmd=%[2]q)", cmd.argsForTrace(osArgs), cmd.Name)
 		// completion request state is per-run: a Command answering several
 		// requests (tests, REPL, embedded use) must not carry one request
 		// into the next
@@ -135,7 +168,7 @@ func (cmd *Command) run(ctx context.Context, osArgs []string) (_ context.Context
 		cmd.shellCompletion = cmd.EnableShellCompletion && cmd.shellCompletion
 	}
 
-	tracef("using post-checkShellCompleteFlag arguments %[1]q (cmd=%[2]q)", osArgs, cmd.Name)
+	tracef("using post-checkShellCompleteFlag arguments %[1]q (cmd=%[2]q)", cmd.argsForTrace(osArgs), cmd.Name)
 
 	tracef("setting self as cmd in context (cmd=%[1]q)", cmd.Name)
 	ctx = context.WithValue(ctx, commandContextKey, cmd)
@@ -168,7 +201,7 @@ func (cmd *Command) run(ctx context.Context, osArgs []string) (_ context.Context
 		cmd.parsedArgs, err = cmd.parseFlags(args)
 	}
 
-	tracef("using post-parse arguments %[1]q (cmd=%[2]q)", args, cmd.Name)
+	tracef("using post-parse arguments %[1]q (cmd=%[2]q)", cmd.traceArgSlice(args.Slice()), cmd.Name)
 
 	if shouldRunCompletion(cmd) {
 		var beforeErr error
@@ -284,7 +317,7 @@ func (cmd *Command) run(ctx context.Context, osArgs []string) (_ context.Context
 
 	var subCmd *Command
 	if cmd.parsedArgs.Present() {
-		tracef("checking positional args %[1]q (cmd=%[2]q)", cmd.parsedArgs, cmd.Name)
+		tracef("checking positional args %[1]q (cmd=%[2]q)", cmd.traceArgSlice(cmd.parsedArgs.Slice()), cmd.Name)
 
 		name := cmd.parsedArgs.First()
 
@@ -304,7 +337,7 @@ func (cmd *Command) run(ctx context.Context, osArgs []string) (_ context.Context
 
 			if hasDefault {
 				argsWithDefault := cmd.argsWithDefaultCommand(cmd.parsedArgs)
-				tracef("using default command args=%[1]q (cmd=%[2]q)", argsWithDefault, cmd.Name)
+				tracef("using default command args=%[1]q (cmd=%[2]q)", cmd.traceArgSlice(argsWithDefault.Slice()), cmd.Name)
 				subCmd = cmd.Command(argsWithDefault.First())
 				cmd.parsedArgs = argsWithDefault
 			}
@@ -319,7 +352,7 @@ func (cmd *Command) run(ctx context.Context, osArgs []string) (_ context.Context
 
 	// If a subcommand has been resolved, let it handle the remaining execution.
 	if subCmd != nil {
-		tracef("running sub-command %[1]q with arguments %[2]q (cmd=%[3]q)", subCmd.Name, cmd.Args(), cmd.Name)
+		tracef("running sub-command %[1]q with arguments %[2]q (cmd=%[3]q)", subCmd.Name, cmd.traceArgSlice(cmd.Args().Slice()), cmd.Name)
 
 		// It is important that we overwrite the ctx variable in the current
 		// function so any defer'd functions use the new context returned

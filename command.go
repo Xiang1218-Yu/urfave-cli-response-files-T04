@@ -148,6 +148,14 @@ type Command struct {
 	// Whether to read arguments from stdin
 	// applicable to root command only
 	ReadArgsFromStdin bool `json:"readArgsFromStdin"`
+	// ResponseFile optionally enables expansion of response file
+	// references (by default arguments starting with "@") in the root
+	// command's arguments. A referenced file contributes commands, flags
+	// and positional arguments exactly as if they had been passed on the
+	// command line, including from shell completion requests. Applies to
+	// the root command only. The zero value disables expansion and keeps
+	// the original operating system argument semantics.
+	ResponseFile ResponseFileConfig `json:"responseFile"`
 	// StopOnNthArg provides v2-like behavior for specific commands by stopping
 	// flag parsing after N positional arguments are encountered. When set to N,
 	// all remaining arguments after the Nth positional argument will be treated
@@ -192,6 +200,9 @@ type Command struct {
 	isCompletionCommand bool
 	// whether this is the built-in help command
 	builtInHelp bool
+	// responseFileArgs holds the result of response file expansion,
+	// aligned with the arguments passed to the root command's Run.
+	responseFileArgs []ExpandedArg
 }
 
 func (cmd *Command) Command(name string) *Command {
@@ -744,6 +755,20 @@ func (cmd *Command) Value(name string) any {
 // be retrieved via the command.{Type}Arg(name) functions instead.
 func (cmd *Command) Args() Args {
 	return cmd.parsedArgs
+}
+
+// ExpandedArgs returns every argument seen by the root command after
+// response file expansion, together with the file, line and column each
+// argument came from. The first element is the program name. It returns
+// nil when response files are disabled or before the command has run.
+func (cmd *Command) ExpandedArgs() []ExpandedArg {
+	root := cmd.Root()
+	if len(root.responseFileArgs) == 0 {
+		return nil
+	}
+	out := make([]ExpandedArg, len(root.responseFileArgs))
+	copy(out, root.responseFileArgs)
+	return out
 }
 
 // NArg returns the number of the command line arguments.

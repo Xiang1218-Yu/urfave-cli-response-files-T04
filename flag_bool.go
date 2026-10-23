@@ -26,7 +26,7 @@ type boolValue struct {
 
 func (cmd *Command) Bool(name string) bool {
 	if v, ok := cmd.Value(name).(bool); ok {
-		tracef("bool available for flag name %[1]q with value=%[2]v (cmd=%[3]q)", name, v, cmd.Name)
+		tracef("bool available for flag name %[1]q with value=%[2]v (cmd=%[3]q)", name, cmd.traceAny(v), cmd.Name)
 		return v
 	}
 

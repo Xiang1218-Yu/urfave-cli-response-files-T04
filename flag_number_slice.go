@@ -6,7 +6,7 @@ type numberType interface {
 
 func getNumberSlice[T numberType](cmd *Command, name string) []T {
 	if v, ok := cmd.Value(name).([]T); ok {
-		tracef("%T slice available for flag name %[1]q with value=%[2]v (cmd=%[3]q)", *new(T), name, v, cmd.Name)
+		tracef("%T slice available for flag name %[1]q with value=%[2]v (cmd=%[3]q)", *new(T), name, cmd.traceAny(v), cmd.Name)
 		return v
 	}
 
